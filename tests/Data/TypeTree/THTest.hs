@@ -54,8 +54,8 @@ justCheckThatItCompiles = testGroup "Compare" [
         checkInstance (Dict :: Dict (Compare Int Int ~ EQ)),
     testCase "Compare Int Float ~ GT" $
         checkInstance (Dict :: Dict (Compare Int Float ~ GT)),
-    testCase "Compare Int Float ~ GT" $
-        checkInstance (Dict :: Dict (Compare Int Float ~ GT))]
+    testCase "Compare Float Int ~ LT" $
+        checkInstance (Dict :: Dict (Compare Float Int ~ LT))]
 
 -----------------------------------------------------------------------------
 -- Testing of utilities
