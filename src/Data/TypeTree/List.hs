@@ -35,8 +35,6 @@ module Data.TypeTree.List (
 import Data.Data
 import Data.Peano
 
-import Data.TypeTree.Operations
-
 -- | A data type to wrap either a ':::' or an 'EndOfList'. By convention it
 --   should not be used for any other purpose.
 data ListTag a deriving Typeable

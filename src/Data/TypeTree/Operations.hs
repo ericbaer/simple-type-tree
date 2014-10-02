@@ -24,7 +24,7 @@ module Data.TypeTree.Operations (
     -- * Repeated applications of type constructors
     InitTypes, LastType, TypeFold,
     -- * Other miscellaneous type-level functions
-    Flip(..), Compare
+    Flip(..), Compose(..), Compare
 ) where
 
 import Data.Peano
@@ -116,6 +116,11 @@ type family TypeFold f k a where
 --   two can't be partially-applied; typically the whole point of using 'Flip'
 --   is so that you can make, e.g., a 'Functor' instance for 'f a'.
 newtype Flip f a b = Flip { unflip :: f b a }
+
+-- | Type-level equivalent of function compositiion. For example, given 'c'
+--   of kind '* -> Constraint' and 'Dict' of kind 'Constraint -> *', we
+--   can write 'Compose Dict c' and 'MapArgs' it on to a list or tree.
+newtype Compose f g a = Compose { _decompose :: f (g a) }
 
 -- | Type-level comparisons. Unlike equality, there's no real choice but to
 --   exhaustively write out examples. Replace this with Nicolas Frisby's

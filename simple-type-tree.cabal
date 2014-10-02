@@ -23,6 +23,10 @@ library
                    Data.TypeTree.Tree,
                    Data.TypeTree.Containment,
                    Data.TypeTree.Induction
+  other-modules:
+                   Data.TypeTree.Containment.List,
+                   Data.TypeTree.Containment.Tree
+
 test-suite simple-type-tree-tests
   type:exitcode-stdio-1.0
   hs-source-dirs: tests, src
