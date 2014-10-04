@@ -21,11 +21,13 @@ module Data.TypeTree.THTest where
 import Control.Monad
 import Data.Constraint
 import Data.Traversable
+import Data.Typeable
 import Language.Haskell.TH
 import Test.HUnit hiding (Test)
 import Test.Framework
 import Test.Framework.Providers.HUnit
 
+import Data.TypeRepLike
 import Data.TypeTree.Operations
 import Data.TypeTree.Tree
 import Data.TypeTree.TH
@@ -88,9 +90,17 @@ testFlattenAppTCon = do
             [ConT double, ConT float, TupleT 0]]
     result @=? flattenAppTCon (ConT f3) f3ChainTy
 
+testThToSTypeRep :: (Typeable a) => Type -> Proxy a -> Assertion
+testThToSTypeRep ty a = Right (likeTypeRep a) @=? thToSTypeRep ty
+
 testUtilities :: Test
 testUtilities = testGroup "Utilities" [
-        testCase "unfoldAppT" testUnfoldAppT,
-        testCase "flattenAppTCon" testFlattenAppTCon,
-        testCase "flattenAppT2" testFlattenAppT2,
-        testCase "flatten/unflatten round trip" testFlattenUnflattenIdentity]
+    testCase "thToSTypeRep: Integer" $
+        testThToSTypeRep (ConT ''Integer) (Proxy :: Proxy Integer),
+    testCase "thToSTypeRep: [Integer]" $
+        testThToSTypeRep (ListT `AppT` ConT ''Integer)
+            (Proxy :: Proxy [Integer]),
+    testCase "unfoldAppT" testUnfoldAppT,
+    testCase "flattenAppTCon" testFlattenAppTCon,
+    testCase "flattenAppT2" testFlattenAppT2,
+    testCase "flatten/unflatten round trip" testFlattenUnflattenIdentity]

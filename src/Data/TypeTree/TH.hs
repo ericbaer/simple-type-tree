@@ -29,7 +29,9 @@ module Data.TypeTree.TH (
     unfoldAppE,
     flattenAppTCon,
     flattenAppT2,
-    unflattenAppT2
+    unflattenAppT2,
+    thToSTypeRep,
+    thToSTyCon
 ) where
 
 import Prelude hiding (exp, sequence, mapM)
@@ -40,6 +42,7 @@ import Data.List
 import Data.Maybe
 import Data.Traversable
 import Language.Haskell.TH
+import Language.Haskell.TH.ExpandSyns
 import Language.Haskell.TH.Syntax
 
 import qualified Data.Sequence as Seq
@@ -64,7 +67,8 @@ typeInstanceCompare = typeInstanceCompareAllTypes . map ConT
 --   already have an instance. Will merrily go and declare duplicate instances
 --   if you have duplicate entries in your list, leading to compilation errors.
 typeInstanceCompareQ :: [Q Type] -> Q [Dec]
-typeInstanceCompareQ = typeInstanceCompareAllTypes <=< sequence
+typeInstanceCompareQ = typeInstanceCompareAllTypes <=< mapM expandSyns <=<
+    sequence
 
 -- | Generates 'Compare' instances for the cartesian product of the given
 --   list of 'Type's.
@@ -124,7 +128,8 @@ treeType = treeTypeQ . map conT
 treeTypeQ :: [Q Type] -> Q Type
 treeTypeQ = go <=< sequence where
     typeRepTuple x = (,,) <$> eitherQ (thToSTypeRep x) <*> pure x <*> pure x
-    go = keyValueTreeType <=< mapM (typeRepTuple) <=< mapM noTypeFamilies
+    go = keyValueTreeType <=< mapM (typeRepTuple) <=< mapM noTypeFamilies <=<
+        mapM expandSyns
 
 -- | Like 'treeType', but with '(key, value)' type pairs; you get a tree of
 --   the 'value's, sorted in lexicographic order of the 'key's.
@@ -134,7 +139,7 @@ keyValueTreeType :: [(STypeRep, Type, Type)] -> Q Type
 keyValueTreeType []          = [t| Leaf |]
 keyValueTreeType [(_, _, n)] = [t| Node $(pure n) Leaf Leaf|]
 keyValueTreeType ns = [t| Node $(pure mid) $(left) $(right)|] where
-    sortedNames = sortBy (compare `on` (show . (\(a, _, _) -> a))) ns
+    sortedNames = sortBy (compare `on` (\(a, _, _) -> a)) ns
     chunkLength = floor $ fromIntegral (length sortedNames) / (2.0 :: Double)
     left = keyValueTreeType $ take chunkLength sortedNames
     mid = (\(_, b, _) -> b) $ head $ drop chunkLength sortedNames
