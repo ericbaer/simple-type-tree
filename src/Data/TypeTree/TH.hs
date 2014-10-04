@@ -14,12 +14,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE DataKinds #-}
 module Data.TypeTree.TH (
     -- * Comparing types
     typeInstanceCompare,
     typeInstanceCompareQ,
     -- * Building trees
     treeType,
+    treeTypeQ,
     keyValueTreeType,
     -- * General utilities
     eitherQ,

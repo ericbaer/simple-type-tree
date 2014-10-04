@@ -19,8 +19,10 @@ import Prelude hiding (either)
 import Data.Typeable
 import Language.Haskell.TH
 
-types :: [Name]
-types = [int, char, double, float, proxy, either, unit, string, name]
+types :: [Q Type]
+types = [[t| Int |], [t| Char |], [t| Double |], [t| Float |],
+    [t| Proxy Float|], [t| Either Int String |], [t| () |], [t| String |],
+    [t| Name |]]
 
 data F3 a b c = F3
 
@@ -44,3 +46,4 @@ unit = ''()
 string = ''String
 name = ''Name
 f3 = ''F3
+bool = ''Bool

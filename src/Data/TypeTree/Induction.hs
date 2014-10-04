@@ -12,6 +12,7 @@
 --
 -----------------------------------------------------------------------------
 {-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE TypeFamilies #-}
 module Data.TypeTree.Induction (
@@ -25,7 +26,7 @@ import Data.TypeTree.List
 -- | A witness that a constraint 'c' holds on the tail of 'ss'. Basically,
 --   pattern match on the instance constructor and the 'Dict' to let GHC
 --   recover the relevant dictionary for 'c'.
-data family InductionWitness (c :: k -> Constraint) ss
+data family InductionWitness (c :: k -> Constraint) (ss :: k)
 
 -- | Base case for lists
 data instance InductionWitness c EndOfList = EndOfListInductionWitness

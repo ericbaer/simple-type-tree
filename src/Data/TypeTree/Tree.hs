@@ -36,26 +36,8 @@ import Data.TypeTree.Operations
 data LeftBranch
 data RightBranch
 
-data Node value (left :: *) (right :: *) deriving Typeable
-data Leaf deriving Typeable
-
--- | A data type to wrap either a 'Node' or a 'Leaf'; sometimes this is useful
---   as a temporary wrapper when we want to write type families that work on
---   both lists and trees.
-data TreeTag a deriving (Typeable)
-deriving instance (Typeable a) => Data (TreeTag a)
-
--- | Given a tree of type constructors, passes the argument 'a' to each of them.
---   See also 'Data.TypeTree.List.MapConsList'.
-type family MapConsTree (a :: *) (ss :: *) where
-    MapConsTree a Leaf         = Leaf
-    MapConsTree a (Node f l r) = Node (f a) (MapConsTree a l) (MapConsTree a r)
-
--- | Given a tree of types, apply to the type constructor 'f' to each of them.
---   See also 'Data.TypeTree.List.MapArgsList'.
-type family MapArgsTree (f :: * -> k) (ss :: *) where
-    MapArgsTree f Leaf         = Leaf
-    MapArgsTree f (Node a l r) = Node (f a) (MapArgsTree f l) (MapArgsTree f r)
+-- | A regular old tree, intended mainly for use with @DataKinds@
+data Tree a = Node a (Tree a) (Tree a) | Leaf deriving Typeable
 
 -- | Go right until there is no more right subtree, and yield the type at that
 --   node.

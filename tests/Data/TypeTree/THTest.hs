@@ -18,8 +18,6 @@
 {-# LANGUAGE ConstraintKinds #-}
 module Data.TypeTree.THTest where
 
-import Prelude hiding (either)
-
 import Control.Monad
 import Data.Constraint
 import Data.Traversable
@@ -37,8 +35,8 @@ import Data.TypeTree.THTest.Internal
 -- Testing of actual template haskell code
 -----------------------------------------------------------------------------
 
-$(typeInstanceCompare types)
-type MyTree = $(treeType types)
+$(typeInstanceCompareQ types)
+type MyTree = $(treeTypeQ types)
 
 -- | If it compiles, and its invocation compiles, that means the instance
 --   actually exists. This is useful if some Template Haskell splice is

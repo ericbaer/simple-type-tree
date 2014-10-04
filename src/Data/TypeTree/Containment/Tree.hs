@@ -14,7 +14,9 @@
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE EmptyDataDecls #-}
 module Data.TypeTree.Containment.Tree (
     -- * Paths and types in trees
     PathToType,
@@ -34,6 +36,7 @@ module Data.TypeTree.Containment.Tree (
 ) where
 
 import Data.TypeTree.List
+import Data.TypeTree.Containment.List
 import Data.TypeTree.Operations
 import Data.TypeTree.Tree
 
@@ -68,14 +71,12 @@ type Prune8 a = TreePathPrune (Prune7 a)
 type Prune9 a = TreePathPrune (Prune8 a)
 type Prune10 a = TreePathPrune (Prune9 a)
 
+data NoPath
+
 -- | Converts a 'TreePathPrune'd tree into a '(:::)' list. If the tree is the
---   result of a failed search, it contains only the single element 'Leaf'; we
---   return 'No' to allow simple non-containment tests of the form
---   'PathToType a ss ~ No'. However, this also means that if we make 'Node'
---   and 'Leaf' into their own kind (e.g. with @DataKinds@, this type family
---   becomes poly-kinded, which causes its own problems.
+--   result of a failed search, it contains only the single element 'Leaf'.
 type family TreePathToList a where
-    TreePathToList Leaf = No
+    TreePathToList Leaf             = NoPath ::: EndOfList
     TreePathToList (Node Yes l r)   = EndOfList
     TreePathToList (Node No l Leaf) = LeftBranch ::: TreePathToList l
     TreePathToList (Node No Leaf r) = RightBranch ::: TreePathToList r
@@ -89,8 +90,10 @@ type family TypeAtPath a ss where
     TypeAtPath (LeftBranch ::: a) (Node value left right) = TypeAtPath a left
     TypeAtPath (RightBranch ::: a) (Node value left right) = TypeAtPath a right
 
--- | The tree equivalent of 'Data.TypeTree.Containment.List.ListContains'
-type TreeContains a t = TypeUnequals (PathToType a t) No
+-- | The tree equivalent of 'Data.TypeTree.Containment.List.ListContains'.
+--   The old way to do this, back when 'PathToType' was of kind @*@, was
+--   @'TypeUnequals' ('PathToType' a t) 'No'@.
+type TreeContains a t = Not (ListContains NoPath (PathToType a t))
 
 type TreeContains1 a ss = (TreeContains a ss ~ Yes)
 type TreeContains2 a b ss = (TreeContains1 a ss, TreeContains1 b ss)

@@ -22,7 +22,8 @@ library
                    Data.TypeTree.TH,
                    Data.TypeTree.Tree,
                    Data.TypeTree.Containment,
-                   Data.TypeTree.Induction
+                   Data.TypeTree.Induction,
+                   Data.TypeTree.Map
   other-modules:
                    Data.TypeTree.Containment.List,
                    Data.TypeTree.Containment.Tree

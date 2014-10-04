@@ -78,7 +78,8 @@ type ListContains1 a ss = (ListContains a ss ~ Yes)
 type ListContains2 a b ss = (ListContains1 a ss, ListContains1 b ss)
 type ListContains3 a b c ss = (ListContains2 a b ss, ListContains1 c ss)
 type ListContains4 a b c d ss = (ListContains2 a b ss, ListContains2 c d ss)
-type ListContains5 a b c d e ss = (ListContains3 a b c ss, ListContains2 d e ss)
+type ListContains5 a b c d e ss =
+    (ListContains3 a b c ss, ListContains2 d e ss)
 type ListContains6 a b c d e f ss = (ListContains3 a b c ss,
     ListContains3 d e f ss)
 type ListContains7 a b c d e f g ss = (ListContains4 a b c d ss,
